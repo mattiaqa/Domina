@@ -4,155 +4,216 @@
 
 using std::size_t;
 
-struct position{
+struct Position{
     int x;
     int y;
 };
 
-position findPiecePosition(int checkerNumber, Player::piece type, Player::piece *board){
-    int countPassedChecker = 0;
+struct availableMove{
+    int x;
+    int y;
+    bool canJump;
+    string direction;
+};
 
-    for(int i = 0; i < BOARD_DIM; ++i){
-        for(int j = 0; j < BOARD_DIM; ++j){
-            if(board[i * BOARD_DIM + j] == type || board[i * BOARD_DIM + j] == type + 2)
-                ++countPassedChecker;
-            
-            if(countPassedChecker == checkerNumber)
-                return {j, i};
-        }
-    }
-
-    return {-1, -1};
+bool checkPosition(int r, int c){
+    if(r < 0 || r > 7 || c < 0 || c > 7)
+        return false;
+    return true;
 }
 
-int moveDama(Player& currentObj, Player::piece *board, position coords, Player::piece type){
-    int pos_y = coords.y;
-    int pos_x = coords.x;
-    Player::piece checker;
-    Player::piece opponentChecker;
-
-    if(type == Player::X){
-        checker = Player::X;
-        opponentChecker = Player::O;
-    }else{
-        checker = Player::O;
-        opponentChecker = Player::X;
-    }
-
-    try{
-        if(currentObj(pos_y + 1, pos_x + 1, 0) == Player::e){
-            board[pos_y * BOARD_DIM + pos_x] = Player::e;
-            board[(pos_y + 1) * BOARD_DIM + (pos_x - 1)] = checker;
-            return 0;
-        }else if(currentObj(pos_y + 1, pos_x - 1, 0) == Player::e){
-            board[pos_y * BOARD_DIM + pos_x] = Player::e;
-            board[(pos_y + 1) * BOARD_DIM + (pos_x - 1)] = checker;
-            return 0;
-        }else if(currentObj(pos_y - 1, pos_x + 1, 0) == Player::e){
-            board[pos_y * BOARD_DIM + pos_x] = Player::e;
-            board[(pos_y - 1) * BOARD_DIM + (pos_x + 1)] = checker;
-            return 0;
-        }else if(currentObj(pos_y - 1, pos_x - 1, 0) == Player::e){
-            board[pos_y * BOARD_DIM + pos_x] = Player::e;
-            board[(pos_y + 1) * BOARD_DIM + (pos_x - 1)] = checker;
-            return 0;
-        }else if(currentObj(pos_y + 1, pos_x + 1, 0) == opponentChecker &&
-                 currentObj(pos_y + 1, pos_x + 1, 0) != checker - 2 &&
-                 currentObj(pos_y + 2, pos_x + 2, 0) == Player::e){
-                
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y + 1) * BOARD_DIM + (pos_x + 1)] = Player::e;
-                board[(pos_y + 2) * BOARD_DIM + (pos_x + 2)] = checker;
-        }else if(currentObj(pos_y + 1, pos_x - 1, 0) == opponentChecker &&
-                 currentObj(pos_y + 1, pos_x - 1, 0) != checker - 2 &&
-                 currentObj(pos_y + 2, pos_x - 2, 0) == Player::e){
-                
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y + 1) * BOARD_DIM + (pos_x - 1)] = Player::e;
-                board[(pos_y + 2) * BOARD_DIM + (pos_x - 2)] = checker;
-        }else if(currentObj(pos_y - 1, pos_x + 1, 0) == opponentChecker &&
-                 currentObj(pos_y - 1, pos_x + 1, 0) != checker - 2 &&
-                 currentObj(pos_y - 2, pos_x + 2, 0) == Player::e){
-                
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y - 1) * BOARD_DIM + (pos_x + 1)] = Player::e;
-                board[(pos_y - 2) * BOARD_DIM + (pos_x + 2)] = checker;
-        }else if(currentObj(pos_y - 1, pos_x - 1, 0) == opponentChecker &&
-                 currentObj(pos_y - 1, pos_x - 1, 0) != checker - 2  &&
-                 currentObj(pos_y - 2, pos_x - 2, 0) == Player::e){
-                
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y - 1) * BOARD_DIM + (pos_x - 1)] = Player::e;
-                board[(pos_y - 2) * BOARD_DIM + (pos_x - 2)] = checker;
-        }
-    }catch(player_exception e){
-        return 2;
-    }
-    return -1;
-}
-
-int movePiece(Player& currentObj, Player::piece *board, position coords, Player::piece type){
-    int pos_y = coords.y;
-    int pos_x = coords.x;
-
+availableMove findPieceToMove(Player* player, Player::piece *board, Player::piece type){
     if(type == Player::x){
-        try{
-            if(currentObj(pos_y - 1, pos_x - 1, 0) == Player::e){
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y - 1) * BOARD_DIM + (pos_x - 1)] = Player::x;
-                return 0;
-            }else if(currentObj(pos_y - 1, pos_x + 1, 0) == Player::e){
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y - 1) * BOARD_DIM + (pos_x + 1)] = Player::x;
-                return 0;
-            }else if(currentObj(pos_y - 2, pos_x - 2, 0) == Player::e &&
-                    currentObj(pos_y - 1, pos_x - 1, 0) == Player::o){
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y - 1) * BOARD_DIM + (pos_x - 1)] = Player::e;
-                board[(pos_y - 2) * BOARD_DIM + (pos_x - 2)] = Player::x;
-                return 0;
-            }else if(currentObj(pos_y - 2, pos_x + 2, 0) == Player::e &&
-                    currentObj(pos_y - 1, pos_x + 1, 0) == Player::o){
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y - 1) * BOARD_DIM + (pos_x + 1)] = Player::e;
-                board[(pos_y - 2) * BOARD_DIM + (pos_x + 2)] = Player::x;
-                return 0;
-            }else{
-                return 1;
+        availableMove availableMoves[26];
+        availableMove availableJumps[26];
+
+        int nAvailableMoves = 0;
+        int nAvailableJumps = 0;
+        for(int i = 0; i < BOARD_DIM; ++i){
+            for(int j = 0; j < BOARD_DIM; ++j){
+                if(board[i * BOARD_DIM + j] == Player::x){
+                    try{
+                        if(checkPosition(i - 1, j + 1)){
+                            if( (*player)(i - 1, j + 1, 0) == Player::e){
+                            availableMoves[nAvailableMoves++] = {j, i, false, "dx-up"};
+                            }
+                        }
+                        if(checkPosition(i - 1, j - 1)){
+                            if( (*player)(i - 1, j - 1, 0) == Player::e){
+                                availableMoves[nAvailableMoves++] = {j, i, false, "sx-up"};
+                            }
+                        }
+                        if(checkPosition(i - 2, j + 2)){
+                            if( (*player)(i - 1, j + 1, 0) == Player::o &&
+                                (*player)(i - 2, j + 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "dx-up"};
+                            }
+                        }
+                        if(checkPosition(i - 2, j - 2)){
+                            if( (*player)(i - 1, j - 1, 0) == Player::o &&
+                                (*player)(i - 2, j - 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "sx-up"};
+                            }
+                        }
+                    }catch(player_exception e){}
+                }else if(board[i * BOARD_DIM + j] == Player::X){
+                    try{
+                        if(checkPosition(i + 1, j + 1)){
+                            if( (*player)(i + 1, j + 1, 0) == Player::e){
+                                availableMoves[nAvailableMoves++] = {j, i, false, "dx-down"};
+                            }
+                        }
+                        if(checkPosition(i + 1, j - 1)){
+                            if( (*player)(i + 1, j - 1, 0) == Player::e){
+                                availableMoves[nAvailableMoves++] = {j, i, false, "sx-down"};
+                            }
+                        }
+                        if(checkPosition(i - 1, j + 1)){
+                            if( (*player)(i - 1, j + 1, 0) == Player::e){
+                                availableMoves[nAvailableMoves++] = {j, i, false, "dx-up"};
+                            }
+                        }
+                        if(checkPosition(i - 1, j - 1)){
+                            if( (*player)(i - 1, j - 1, 0) == Player::e){
+                                availableMoves[nAvailableMoves++] = {j, i, false, "sx-up"};
+                            }
+                        }
+                        if(checkPosition(i + 2, j + 2)){
+                            if( ((*player)(i + 1, j + 1, 0) == Player::o ||
+                                (*player)(i + 1, j + 1, 0) == Player::O) &&
+                                (*player)(i + 2, j + 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "dx-down"};
+                            }
+                        }
+                        if(checkPosition(i + 2, j - 2)){
+                            if( ((*player)(i + 1, j - 1, 0) == Player::o ||
+                                (*player)(i + 1, j - 1, 0) == Player::O) &&
+                                (*player)(i + 2, j - 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "sx-down"};
+                            }
+                        }
+                        if(checkPosition(i - 2, j + 2)){
+                            if( ((*player)(i - 1, j + 1, 0) == Player::o ||
+                                (*player)(i - 1, j + 1, 0) == Player::O) &&
+                                (*player)(i - 2, j + 2, 0) == Player::e){
+                            availableJumps[nAvailableJumps++] = {j, i, true, "dx-up"};
+                            }
+                        }
+                        if(checkPosition(i - 2, j - 2)){
+                            if( ((*player)(i - 1, j - 1, 0) == Player::o ||
+                                (*player)(i - 1, j - 1, 0) == Player::O) &&
+                                (*player)(i - 2, j - 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "sx-up"};
+                            }
+                        }
+                    }catch(player_exception e){}
+                }
             }
-        }catch(player_exception e){
-            return 2;
         }
-    }else if(type == Player::o){
-        try{
-            if(currentObj(pos_y + 1, pos_x - 1, 0) == Player::e){
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y + 1) * BOARD_DIM + (pos_x - 1)] = Player::o;
-                return 0;
-            }else if(currentObj(pos_y + 1, pos_x + 1, 0) == Player::e){
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y + 1) * BOARD_DIM + (pos_x + 1)] = Player::o;
-                return 0;
-            }else if(currentObj(pos_y + 2, pos_x - 2, 0) == Player::e &&
-                    currentObj(pos_y + 1, pos_x - 1, 0) == Player::x){
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y + 1) * BOARD_DIM + (pos_x - 1)] = Player::e;
-                board[(pos_y + 2) * BOARD_DIM + (pos_x - 2)] = Player::o;
-                return 0;
-            }else if(currentObj(pos_y + 2, pos_x + 2, 0) == Player::e &&
-                    currentObj(pos_y + 1, pos_x + 1, 0) == Player::x){
-                board[pos_y * BOARD_DIM + pos_x] = Player::e;
-                board[(pos_y + 1) * BOARD_DIM + (pos_x + 1)] = Player::e;
-                board[(pos_y + 2) * BOARD_DIM + (pos_x + 2)] = Player::o;
-                return 0;
-            }else{
-                return 1;
+
+        if(nAvailableJumps > 0){
+            int randomPosition = rand() % (nAvailableJumps);
+            return availableJumps[randomPosition];
+        }
+        int randomPosition = rand() % (nAvailableMoves);
+        return availableMoves[randomPosition];
+    }else{
+        availableMove availableMoves[26];
+        availableMove availableJumps[26];
+
+        int nAvailableMoves = 0;
+        int nAvailableJumps = 0;
+
+        for(int i = 0; i < BOARD_DIM; ++i){
+            for(int j = 0; j < BOARD_DIM; ++j){
+                if(board[i * BOARD_DIM + j] == Player::o){
+                    try{
+                        if(checkPosition(i + 1, j + 1)){
+                            if( (*player)(i + 1, j + 1, 0) == Player::e){
+                                availableMoves[nAvailableMoves++] = {j, i, false, "dx-down"};
+                            }
+                        }
+                        if(checkPosition(i + 1, j - 1)){
+                            if( (*player)(i + 1, j - 1, 0) == Player::e){
+                                availableMoves[nAvailableMoves++] = {j, i, false, "sx-down"};
+                            }
+                        }
+                        if(checkPosition(i + 2, j + 2)){
+                            if( (*player)(i + 1, j + 1, 0) == Player::x &&
+                                (*player)(i + 2, j + 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "dx-down"};
+                            }
+                        }
+                        if(checkPosition(i + 2, j - 2)){
+                            if( (*player)(i + 1, j - 1, 0) == Player::x &&
+                                (*player)(i + 2, j - 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "sx-down"};
+                            }
+                        }
+                    }catch(player_exception e){}
+                }else if(board[i * BOARD_DIM + j] == Player::O){
+                    try{
+                        if(checkPosition(i - 1, j + 1)){
+                            if( (*player)(i - 1, j + 1, 0) == Player::e){
+                                availableMoves[nAvailableMoves++] = {j, i, false, "dx-up"};
+                            }
+                        }
+                        if(checkPosition(i - 1, j - 1)){
+                            if( (*player)(i - 1, j - 1, 0) == Player::e){
+                                availableMoves[nAvailableMoves++] = {j, i, false, "sx-up"};
+                            }
+                        }
+                        if(checkPosition(i + 1, j + 1)){
+                            if( (*player)(i + 1, j + 1, 0) == Player::e){
+                            availableMoves[nAvailableMoves++] = {j, i, false, "dx-down"};
+                            }
+                        }
+                        if(checkPosition(i + 1, j - 1)){
+                            if( (*player)(i + 1, j - 1, 0) == Player::e){
+                                availableMoves[nAvailableMoves++] = {j, i, false, "sx-down"};
+                            }
+                        }
+                        if(checkPosition(i - 2, j + 2)){
+                            if( ((*player)(i - 1, j + 1, 0) == Player::x ||
+                                (*player)(i - 1, j + 1, 0) == Player::X) &&
+                                (*player)(i - 2, j + 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "dx-up"};
+                            }
+                        }
+                        if(checkPosition(i - 2, j - 2)){
+                            if( ((*player)(i - 1, j - 1, 0) == Player::x ||
+                                (*player)(i - 1, j - 1, 0) == Player::X) &&
+                                (*player)(i - 2, j - 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "sx-up"};
+                            }
+                        }
+                        if(checkPosition(i + 2, j + 2)){
+                            if( ((*player)(i + 1, j + 1, 0) == Player::x ||
+                                (*player)(i + 1, j + 1, 0) == Player::X) &&
+                                (*player)(i + 2, j + 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "dx-down"};
+                            }
+                        }
+                        if(checkPosition(i + 2, j - 2)){
+                            if( ((*player)(i + 1, j - 1, 0) == Player::x ||
+                                (*player)(i + 1, j - 1, 0) == Player::X) &&
+                                (*player)(i + 2, j - 2, 0) == Player::e){
+                                availableJumps[nAvailableJumps++] = {j, i, true, "sx-down"};
+                            }
+                        }
+                    }catch(player_exception e){}
+                }
             }
-        }catch(player_exception e){
-            return 2;
         }
+
+        if(nAvailableJumps > 0){
+            int randomPosition = rand() % (nAvailableJumps);
+            return availableJumps[randomPosition];
+        }
+        int randomPosition = rand() % (nAvailableMoves);
+        return availableMoves[randomPosition];
+
     }
-    return -1;
 }
 
 void makeDama(Player::piece *board, Player::piece type){
@@ -165,14 +226,6 @@ void makeDama(Player::piece *board, Player::piece type){
         for(int i = 0 ; i < BOARD_DIM; ++i){
             if(board[(BOARD_DIM - 1) * BOARD_DIM + i] == Player::o)
                 board[(BOARD_DIM - 1) * BOARD_DIM + i] = Player::O;
-        }
-    }
-}
-
-bool isStall(Player::piece *board){
-    for(int i = 0; i < BOARD_DIM; ++i){
-        for(int j = 0; j < BOARD_DIM; ++j){
-            
         }
     }
 }
@@ -242,7 +295,7 @@ Player::Player(int player_nr){
     if(player_nr < 1 || player_nr > 2)
         throw player_exception{player_exception::index_out_of_bounds, "Player_nr must be equal to 1 or 2!"};
     
-    srand(time(NULL));
+    srand(time(0));
     this->pimpl = new Impl{player_nr, 0, History{}};
 }
 
@@ -336,8 +389,8 @@ void Player::store_board(const string& filename, int history_offset) const{
         }
         if(i != BOARD_DIM - 1)  
             temp.at(15) = '\n';
-        else
-            temp.erase(temp.end());
+        else if(i == BOARD_DIM - 1)
+            temp.erase(temp.end() - 1);
         outFile << temp;
     }
 
@@ -365,53 +418,129 @@ void Player::init_board(const string& filename) const {
 void Player::move(){
     /* Player 1 -> x || Player 2 -> o */
     Player::piece *board = this->pimpl->boardHistory.getBoard(0);
-
     if(this->pimpl->player_nr == 1){
-        int resultCode;
-        bool valid = false;
+        availableMove pieceToMove = findPieceToMove(this, board, Player::x);
+        int x = pieceToMove.x;
+        int y = pieceToMove.y;
 
-        while(!valid){
-            try{
-                int pieceNum = rand() % 12 + 1;
-            
-                position piecePosition = findPiecePosition(pieceNum, x, board);
-                int pos_x = piecePosition.x;
-                int pos_y = piecePosition.y;
-
-                if((*this)(pos_y, pos_x, 0) == X)
-                    resultCode = moveDama(*this, board, piecePosition, X);
-                else if((*this)(pos_y, pos_x, 0) == x)
-                    resultCode = movePiece(*this, board, piecePosition, x);
-
-                makeDama(board, x);
-
-                if(resultCode == 0)
-                    valid = true;
-            }catch(player_exception e){}
+        if(!pieceToMove.canJump){
+            if(board[y * BOARD_DIM + x] == Player::x){
+                board[y * BOARD_DIM + x] = Player::e;
+                if(pieceToMove.direction == "sx-up"){
+                    board[(y - 1) * BOARD_DIM + (x - 1)] = Player::x;
+                }
+                if(pieceToMove.direction == "dx-up"){
+                    board[(y - 1) * BOARD_DIM + (x + 1)] = Player::x;
+                }
+            }else if(board[y * BOARD_DIM + x] == Player::X){
+                board[y * BOARD_DIM + x] = Player::e;
+                if(pieceToMove.direction == "sx-down"){
+                    board[(y + 1) * BOARD_DIM + (x - 1)] = Player::X;
+                }
+                if(pieceToMove.direction == "dx-down"){
+                    board[(y + 1) * BOARD_DIM + (x + 1)] = Player::X;
+                }
+                if(pieceToMove.direction == "sx-up"){
+                    board[(y - 1) * BOARD_DIM + (x - 1)] = Player::X;
+                }
+                if(pieceToMove.direction == "dx-up"){
+                    board[(y - 1) * BOARD_DIM + (x + 1)] = Player::X;
+                }
+            }
+        }else{
+            if(board[y * BOARD_DIM + x] == Player::x){
+                board[y * BOARD_DIM + x] = Player::e;
+                if(pieceToMove.direction == "sx-up"){
+                    board[(y - 1) * BOARD_DIM + (x - 1)] = Player::e;
+                    board[(y - 2) * BOARD_DIM + (x - 2)] = Player::x;
+                }
+                if(pieceToMove.direction == "dx-up"){
+                    board[(y - 1) * BOARD_DIM + (x + 1)] = Player::e;
+                    board[(y - 2) * BOARD_DIM + (x + 2)] = Player::x;
+                }
+            }else if(board[y * BOARD_DIM + x] == Player::X){
+                board[y * BOARD_DIM + x] = Player::e;
+                if(pieceToMove.direction == "sx-down"){
+                    board[(y + 1) * BOARD_DIM + (x - 1)] = Player::e;
+                    board[(y + 2) * BOARD_DIM + (x - 2)] = Player::X;
+                }
+                if(pieceToMove.direction == "dx-down"){
+                    board[(y + 1) * BOARD_DIM + (x + 1)] = Player::e;
+                    board[(y + 2) * BOARD_DIM + (x + 2)] = Player::X;
+                }
+                if(pieceToMove.direction == "sx-up"){
+                    board[(y - 1) * BOARD_DIM + (x - 1)] = Player::e;
+                    board[(y - 2) * BOARD_DIM + (x - 2)] = Player::X;
+                }
+                if(pieceToMove.direction == "dx-up"){
+                    board[(y - 1) * BOARD_DIM + (x + 1)] = Player::e;
+                    board[(y - 2) * BOARD_DIM + (x + 2)] = Player::X;
+                }
+            }
         }
+
+        makeDama(board, Player::x);
     }else{
-        bool valid = false;
-        int resultCode;
-        
-        while(!valid){
-            try{
-                int pieceNum = rand() % 12 + 1;
-            
-                position piecePosition = findPiecePosition(pieceNum, o, board);
-                int pos_x = piecePosition.x;
-                int pos_y = piecePosition.y;
+        availableMove pieceToMove = findPieceToMove(this, board, Player::o);
+        int x = pieceToMove.x;
+        int y = pieceToMove.y;
 
-                if((*this)(pos_y, pos_x, 0) == O)
-                    resultCode = moveDama(*this, board, piecePosition, O);
-                else if((*this)(pos_y, pos_x, 0) == o)
-                    resultCode = movePiece(*this, board, piecePosition, o);
-
-                makeDama(board, o);
-
-                if(resultCode == 0)
-                    valid = true;
-            }catch(player_exception e){}
+        if(!pieceToMove.canJump){
+            if(board[y * BOARD_DIM + x] == Player::o){
+                board[y * BOARD_DIM + x] = Player::e;
+                if(pieceToMove.direction == "sx-down"){
+                    board[(y + 1) * BOARD_DIM + (x - 1)] = Player::o;
+                }
+                if(pieceToMove.direction == "dx-down"){
+                    board[(y + 1) * BOARD_DIM + (x + 1)] = Player::o;
+                }
+            }else if(board[y * BOARD_DIM + x] == Player::O){
+                board[y * BOARD_DIM + x] = Player::e;
+                if(pieceToMove.direction == "sx-down"){
+                    board[(y + 1) * BOARD_DIM + (x - 1)] = Player::O;
+                }
+                if(pieceToMove.direction == "dx-down"){
+                    board[(y + 1) * BOARD_DIM + (x + 1)] = Player::O;
+                }
+                if(pieceToMove.direction == "sx-up"){
+                    board[(y - 1) * BOARD_DIM + (x - 1)] = Player::O;
+                }
+                if(pieceToMove.direction == "dx-up"){
+                    board[(y - 1) * BOARD_DIM + (x + 1)] = Player::O;
+                }
+            }
+        }else{
+            if(board[y * BOARD_DIM + x] == Player::o){
+                board[y * BOARD_DIM + x] = Player::e;
+                if(pieceToMove.direction == "sx-down"){
+                    board[(y + 1) * BOARD_DIM + (x - 1)] = Player::e;
+                    board[(y + 2) * BOARD_DIM + (x - 2)] = Player::o;
+                }
+                if(pieceToMove.direction == "dx-down"){
+                    board[(y + 1) * BOARD_DIM + (x + 1)] = Player::e;
+                    board[(y + 2) * BOARD_DIM + (x + 2)] = Player::o;
+                }
+            }else if(board[y * BOARD_DIM + x] == Player::O){
+                board[y * BOARD_DIM + x] = Player::e;
+                if(pieceToMove.direction == "sx-down"){
+                    board[(y + 1) * BOARD_DIM + (x - 1)] = Player::e;
+                    board[(y + 2) * BOARD_DIM + (x - 2)] = Player::O;
+                }
+                if(pieceToMove.direction == "dx-down"){
+                    board[(y + 1) * BOARD_DIM + (x + 1)] = Player::e;
+                    board[(y + 2) * BOARD_DIM + (x + 2)] = Player::O;
+                }
+                if(pieceToMove.direction == "sx-up"){
+                    board[(y - 1) * BOARD_DIM + (x - 1)] = Player::e;
+                    board[(y - 2) * BOARD_DIM + (x - 2)] = Player::O;
+                }
+                if(pieceToMove.direction == "dx-up"){
+                    board[(y - 1) * BOARD_DIM + (x + 1)] = Player::e;
+                    board[(y - 2) * BOARD_DIM + (x + 2)] = Player::O;
+                }
+            }
         }
+        makeDama(board, Player::o);
     }
 }
 
@@ -429,7 +558,7 @@ bool Player::wins(int player_nr) const{
     if(player_nr == 1){
         for(int i = 0; i < BOARD_DIM; ++i){
             for(int j = 0; j < BOARD_DIM; ++j){
-                if(board[i * BOARD_DIM + j] == o)
+                if(board[i * BOARD_DIM + j] == o || board[i * BOARD_DIM + j] == O)
                     return false;
             }
         }
@@ -437,7 +566,7 @@ bool Player::wins(int player_nr) const{
     }else{
         for(int i = 0; i < BOARD_DIM; ++i){
             for(int j = 0; j < BOARD_DIM; ++j){
-                if(board[i * BOARD_DIM + j] == x)
+                if(board[i * BOARD_DIM + j] == x || board[i * BOARD_DIM + j] == X)
                     return false;
             }
         }
@@ -455,7 +584,7 @@ bool Player::loses(int player_nr) const{
     if(player_nr == 1){
         for(int i = 0; i < BOARD_DIM; ++i){
             for(int j = 0; j < BOARD_DIM; ++j){
-                if(board[i * BOARD_DIM + j] == x)
+                if(board[i * BOARD_DIM + j] == x || board[i * BOARD_DIM + j] == X)
                     return false;
             }
         }
@@ -463,7 +592,7 @@ bool Player::loses(int player_nr) const{
     }else{
         for(int i = 0; i < BOARD_DIM; ++i){
             for(int j = 0; j < BOARD_DIM; ++j){
-                if(board[i * BOARD_DIM + j] == o)
+                if(board[i * BOARD_DIM + j] == o || board[i * BOARD_DIM + j] == O)
                     return false;
             }
         }

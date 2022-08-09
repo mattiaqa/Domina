@@ -5,5 +5,5 @@ play: play.cpp player.cpp
 	g++ --std=c++14 play.cpp player.cpp -o play && ./play
 
 clean:
-	rm *.txt
+	rm boards/*.txt
 
