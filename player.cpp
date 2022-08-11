@@ -239,14 +239,17 @@ class History{
         using node_ptr = node*;
 
         node_ptr head;
+        int nEntry;
 
     void prepend(Player::piece *board){
         if(!head){
             this->head = new node{board, nullptr};
+            ++nEntry;
             return;
         }
         node_ptr newNode = new node{board, head};
         this->head = newNode;
+        ++nEntry;
     }
 
     void deleteRecursively(node_ptr current){
@@ -258,7 +261,7 @@ class History{
     }
 
     public:
-        History() : head{nullptr} {};
+        History() : head{nullptr}, nEntry{0} {};
  
         ~History(){
             deleteRecursively(this->head);
@@ -282,6 +285,10 @@ class History{
             node_ptr temp = this->head;
             this->head = temp->next;
             delete(temp);
+        }
+
+        int getNumberOfEntry(){
+            return this->nEntry;
         }
 };
 
@@ -544,10 +551,6 @@ void Player::move(){
     }
 }
 
-bool Player::valid_move() const{
-    return false;
-}
-
 void Player::pop(){
     this->pimpl->boardHistory.pop();
 }
@@ -602,4 +605,58 @@ bool Player::loses(int player_nr) const{
 
 bool Player::loses() const{
     return this->loses(this->pimpl->player_nr);
+}
+
+bool Player::valid_move() const{
+    Player::piece* lastBoard = this->pimpl->boardHistory.getBoard(0);
+    Player::piece* secondToLastBoard = this->pimpl->boardHistory.getBoard(1);
+
+    int x = -1, y = -1;
+    Player::piece pieceNotEqual;
+
+    for(int i = 0; i < BOARD_DIM; ++i){
+        for(int j = 0; j < BOARD_DIM; ++j){
+            if(lastBoard[i * BOARD_DIM + j] == secondToLastBoard[i * BOARD_DIM + j]){
+                x = j;
+                y = i;
+                pieceNotEqual = secondToLastBoard[i * BOARD_DIM + j];
+            }
+        }
+    }
+
+    if(x == -1 && y == -1)
+        return false;
+
+    if(lastBoard[y * BOARD_DIM + x] != Player::e)
+        return false;
+
+    if(pieceNotEqual == Player::o){
+        if((*this)(y + 1, x + 1, 0) == pieceNotEqual)
+            return true;
+        if((*this)(y + 1, x - 1, 0) == pieceNotEqual)
+            return true;
+    }
+
+    return false;
+
+}
+
+int Player::recurrence() const {
+    Player::piece *lastBoard = this->pimpl->boardHistory.getBoard(0);
+    int countRec = 1;
+
+    for(int i = 1; i < this->pimpl->boardHistory.getNumberOfEntry(); ++i){
+        bool equal = true;
+        Player::piece *currentBoard = this->pimpl->boardHistory.getBoard(i);
+        for(int j = 0; j < BOARD_DIM * BOARD_DIM; ++j){
+            if(lastBoard[j] != currentBoard[j]){
+                equal = false;
+                break;
+            }
+        }
+        if(equal)
+            ++countRec;
+    }
+
+    return countRec;
 }
