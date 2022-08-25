@@ -111,10 +111,13 @@ availableMove findPieceToMove(Player* player, Player::piece *board, Player::piec
             }
         }
 
+        /* If there are pawns to be eliminated, I choose one of those randomly.*/
         if(nAvailableJumps > 0){
             int randomPosition = rand() % (nAvailableJumps);
             return availableJumps[randomPosition];
         }
+
+        /* Otherwise I choose the move randomly from those that do not eliminate pawns */
         int randomPosition = rand() % (nAvailableMoves);
         return availableMoves[randomPosition];
     }else{
@@ -311,12 +314,14 @@ Player::~Player() {
 }
 
 Player::Player(const Player& source){
-    this->pimpl = new Impl{source.pimpl->player_nr, 0, History{source.pimpl->boardHistory}};
+    this->~Player();
+    this->pimpl = new Impl{source.pimpl->player_nr, source.pimpl->nDame, History{source.pimpl->boardHistory}};
 }
 
 Player& Player::operator=(const Player& source){
     this->~Player();
     this->pimpl = new Impl{source.pimpl->player_nr, 0, History{source.pimpl->boardHistory}};
+    
     return *this;
 }
 
@@ -334,7 +339,7 @@ void Player::load_board(const string& filename){
     Player::piece* board = new Player::piece[BOARD_DIM * BOARD_DIM];
 
     if(!fileIn.is_open()) 
-        throw std::runtime_error("Could not open file");
+        throw player_exception{player_exception::missing_file, "File not found"};
 
     string line;
     size_t raw = 0, cols = 0;
@@ -370,6 +375,9 @@ void Player::load_board(const string& filename){
 }
 
 void Player::store_board(const string& filename, int history_offset) const{
+    if(history_offset > this->pimpl->boardHistory.getNumberOfEntry())
+        throw player_exception{player_exception::index_out_of_bounds, "Board doesn't exist in memory"};
+
     Player::piece *board = this->pimpl->boardHistory.getBoard(history_offset);
     ofstream outFile{filename};
 
@@ -423,7 +431,9 @@ void Player::init_board(const string& filename) const {
 }
 
 void Player::move(){
-    /* Player 1 -> x || Player 2 -> o */
+    if(this->pimpl->boardHistory.getNumberOfEntry() == 0)
+        throw player_exception{player_exception::index_out_of_bounds, "History is empty!"};
+
     Player::piece *board = this->pimpl->boardHistory.getBoard(0);
     if(this->pimpl->player_nr == 1){
         availableMove pieceToMove = findPieceToMove(this, board, Player::x);
@@ -552,10 +562,16 @@ void Player::move(){
 }
 
 void Player::pop(){
+    if(this->pimpl->boardHistory.getNumberOfEntry() == 0)
+        throw player_exception{player_exception::index_out_of_bounds, "History is empty!"};
+
     this->pimpl->boardHistory.pop();
 }
 
 bool Player::wins(int player_nr) const{
+    if(this->pimpl->boardHistory.getNumberOfEntry() == 0)
+        throw player_exception{player_exception::index_out_of_bounds, "History is empty!"};
+
     Player::piece *board = this->pimpl->boardHistory.getBoard(0);
 
     if(player_nr == 1){
@@ -582,6 +598,9 @@ bool Player::wins() const{
 }
 
 bool Player::loses(int player_nr) const{
+    if(this->pimpl->boardHistory.getNumberOfEntry() == 0)
+        throw player_exception{player_exception::index_out_of_bounds, "History is empty!"};
+
     Player::piece *board = this->pimpl->boardHistory.getBoard(0);
 
     if(player_nr == 1){
@@ -608,40 +627,106 @@ bool Player::loses() const{
 }
 
 bool Player::valid_move() const{
+    if(this->pimpl->boardHistory.getNumberOfEntry() < 2)
+        throw player_exception{player_exception::index_out_of_bounds, "There are less than two boards in memory!"};
+
     Player::piece* lastBoard = this->pimpl->boardHistory.getBoard(0);
     Player::piece* secondToLastBoard = this->pimpl->boardHistory.getBoard(1);
 
-    int x = -1, y = -1;
-    Player::piece pieceNotEqual;
-
     for(int i = 0; i < BOARD_DIM; ++i){
         for(int j = 0; j < BOARD_DIM; ++j){
-            if(lastBoard[i * BOARD_DIM + j] == secondToLastBoard[i * BOARD_DIM + j]){
-                x = j;
-                y = i;
-                pieceNotEqual = secondToLastBoard[i * BOARD_DIM + j];
-            }
+            if(lastBoard[i * BOARD_DIM + j] != secondToLastBoard[i * BOARD_DIM + j]){
+                if(secondToLastBoard[i * BOARD_DIM + j] == Player::o) {
+                        bool isValid = false;
+                        if(checkPosition(i + 1, j + 1)){
+                            if(lastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::o)
+                                isValid = true;
+                        }
+                        if(checkPosition(i + 1, j - 1)){
+                            if(lastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::o)
+                                isValid = true;
+                        }
+                        return isValid;
+                }
+
+                if(lastBoard[i * BOARD_DIM + j] == Player::x) {
+                        bool isValid = false;
+                        if(checkPosition(i + 1, j + 1)){
+                            if(secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::x)
+                                isValid = true;
+                        }
+                        if(checkPosition(i + 1, j - 1)){
+                            if(secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::x)
+                                isValid = true;
+                        }
+                        return isValid;
+                }
+
+                if(lastBoard[i * BOARD_DIM + j] == Player::O) {
+                        bool isValid = false;
+                        if(checkPosition(i + 1, j + 1)){
+                            if(secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::O)
+                                isValid = true;
+                        }
+                        if(checkPosition(i + 1, j - 1)){
+                            if(secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::O)
+                                isValid = true;
+                        }
+                        return isValid;
+                }
+
+                if(secondToLastBoard[i * BOARD_DIM + j] == Player::O) {
+                        bool isValid = false;
+                        if(checkPosition(i + 1, j + 1)){
+                            if(lastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::O)
+                                isValid = true;
+                        }
+                        if(checkPosition(i + 1, j - 1)){
+                            if(lastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::O)
+                                isValid = true;
+                        }
+                        return isValid;
+                }
+
+                if(lastBoard[i * BOARD_DIM + j] == Player::X) {
+                        bool isValid = false;
+                        if(checkPosition(i + 1, j + 1)){
+                            if(secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::X)
+                                isValid = true;
+                        }
+                        if(checkPosition(i + 1, j - 1)){
+                            if(secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::X)
+                                isValid = true;
+                        }
+                        return isValid;
+                }
+
+                if(secondToLastBoard[i * BOARD_DIM + j] == Player::X) {
+                        bool isValid = false;
+                        if(checkPosition(i + 1, j + 1)){
+                            if(lastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::X)
+                                isValid = true;
+                        }
+                        if(checkPosition(i + 1, j - 1)){
+                            if(lastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::X)
+                                isValid = true;
+                        }
+                        return isValid;
+                }
+
+                return false;
+            } 
         }
     }
 
-    if(x == -1 && y == -1)
-        return false;
-
-    if(lastBoard[y * BOARD_DIM + x] != Player::e)
-        return false;
-
-    if(pieceNotEqual == Player::o){
-        if((*this)(y + 1, x + 1, 0) == pieceNotEqual)
-            return true;
-        if((*this)(y + 1, x - 1, 0) == pieceNotEqual)
-            return true;
-    }
-
     return false;
-
 }
 
+
 int Player::recurrence() const {
+    if(this->pimpl->boardHistory.getNumberOfEntry() == 0)
+        throw player_exception{player_exception::index_out_of_bounds, "History is empty!"};
+        
     Player::piece *lastBoard = this->pimpl->boardHistory.getBoard(0);
     int countRec = 1;
 
