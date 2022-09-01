@@ -28,7 +28,7 @@ int main(int argc, char **argv){
 		
 		if(round > MAX_ROUNDS){
 			cout << "Reached max rounds";
-			exit(0);
+			break;
 		}
 
 		cout << "Playing as player 1" << endl;
@@ -45,23 +45,22 @@ int main(int argc, char **argv){
 			p1.store_board(board_name);
 
 			if(p1.wins()){
-				cout << "Player 1 wins" << endl;
-				exit(0);
+				cout << "Player 1 wins\n" << endl;
+				break;
 			}
 		}catch(player_exception e){
 			cout << e.msg << endl;
 		}
 
-		/*try{
+		try{
 			v.load_board(board_name);
 			if(!v.valid_move()){
-				cout << "Player 1 loses for invalid move";
-				exit(0);
+				cout << "Player 1 loses for invalid move\n";
+				break;
 			}
 		}catch(player_exception e){
 			cout << e.msg << endl;
-		}*/
-		
+		}
 
 		cout << "Playing as player 2" << endl;
 		board_name =  "boards/board_" + std::to_string(round) + ".txt";
@@ -77,24 +76,28 @@ int main(int argc, char **argv){
 			p2.store_board(board_name);
 
 			if(p2.wins()){
-				cout << "Player 1 wins" << endl;
-				exit(0);
+				cout << "Player 2 wins\n" << endl;
+				break;
 			}
 		}catch(player_exception e){
 			cout << e.msg << endl;
 		}
 
-		/*
 		try{
 			v.load_board(board_name);
 
 			if(!v.valid_move()){
-				cout << "Player 2 loses for invalid move";
-				exit(0);
+				cout << "Player 2 loses for invalid move\n";
+				break;
 			}
 		}catch(player_exception e){
 			cout << e.msg << endl;
-		}*/
+		}
 	}
+
+	Player p3(p1);
+	Player p4 = p2;
+
+	std::cout << p1.recurrence();
 	
 }

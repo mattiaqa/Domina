@@ -16,7 +16,7 @@ struct availableMove{
     string direction;
 };
 
-bool checkPosition(int r, int c){
+bool validPosition(int r, int c){
     if(r < 0 || r > 7 || c < 0 || c > 7)
         return false;
     return true;
@@ -33,23 +33,23 @@ availableMove findPieceToMove(Player* player, Player::piece *board, Player::piec
             for(int j = 0; j < BOARD_DIM; ++j){
                 if(board[i * BOARD_DIM + j] == Player::x){
                     try{
-                        if(checkPosition(i - 1, j + 1)){
+                        if(validPosition(i - 1, j + 1)){
                             if( (*player)(i - 1, j + 1, 0) == Player::e){
                             availableMoves[nAvailableMoves++] = {j, i, false, "dx-up"};
                             }
                         }
-                        if(checkPosition(i - 1, j - 1)){
+                        if(validPosition(i - 1, j - 1)){
                             if( (*player)(i - 1, j - 1, 0) == Player::e){
                                 availableMoves[nAvailableMoves++] = {j, i, false, "sx-up"};
                             }
                         }
-                        if(checkPosition(i - 2, j + 2)){
+                        if(validPosition(i - 2, j + 2)){
                             if( (*player)(i - 1, j + 1, 0) == Player::o &&
                                 (*player)(i - 2, j + 2, 0) == Player::e){
                                 availableJumps[nAvailableJumps++] = {j, i, true, "dx-up"};
                             }
                         }
-                        if(checkPosition(i - 2, j - 2)){
+                        if(validPosition(i - 2, j - 2)){
                             if( (*player)(i - 1, j - 1, 0) == Player::o &&
                                 (*player)(i - 2, j - 2, 0) == Player::e){
                                 availableJumps[nAvailableJumps++] = {j, i, true, "sx-up"};
@@ -58,48 +58,48 @@ availableMove findPieceToMove(Player* player, Player::piece *board, Player::piec
                     }catch(player_exception e){}
                 }else if(board[i * BOARD_DIM + j] == Player::X){
                     try{
-                        if(checkPosition(i + 1, j + 1)){
+                        if(validPosition(i + 1, j + 1)){
                             if( (*player)(i + 1, j + 1, 0) == Player::e){
                                 availableMoves[nAvailableMoves++] = {j, i, false, "dx-down"};
                             }
                         }
-                        if(checkPosition(i + 1, j - 1)){
+                        if(validPosition(i + 1, j - 1)){
                             if( (*player)(i + 1, j - 1, 0) == Player::e){
                                 availableMoves[nAvailableMoves++] = {j, i, false, "sx-down"};
                             }
                         }
-                        if(checkPosition(i - 1, j + 1)){
+                        if(validPosition(i - 1, j + 1)){
                             if( (*player)(i - 1, j + 1, 0) == Player::e){
                                 availableMoves[nAvailableMoves++] = {j, i, false, "dx-up"};
                             }
                         }
-                        if(checkPosition(i - 1, j - 1)){
+                        if(validPosition(i - 1, j - 1)){
                             if( (*player)(i - 1, j - 1, 0) == Player::e){
                                 availableMoves[nAvailableMoves++] = {j, i, false, "sx-up"};
                             }
                         }
-                        if(checkPosition(i + 2, j + 2)){
+                        if(validPosition(i + 2, j + 2)){
                             if( ((*player)(i + 1, j + 1, 0) == Player::o ||
                                 (*player)(i + 1, j + 1, 0) == Player::O) &&
                                 (*player)(i + 2, j + 2, 0) == Player::e){
                                 availableJumps[nAvailableJumps++] = {j, i, true, "dx-down"};
                             }
                         }
-                        if(checkPosition(i + 2, j - 2)){
+                        if(validPosition(i + 2, j - 2)){
                             if( ((*player)(i + 1, j - 1, 0) == Player::o ||
                                 (*player)(i + 1, j - 1, 0) == Player::O) &&
                                 (*player)(i + 2, j - 2, 0) == Player::e){
                                 availableJumps[nAvailableJumps++] = {j, i, true, "sx-down"};
                             }
                         }
-                        if(checkPosition(i - 2, j + 2)){
+                        if(validPosition(i - 2, j + 2)){
                             if( ((*player)(i - 1, j + 1, 0) == Player::o ||
                                 (*player)(i - 1, j + 1, 0) == Player::O) &&
                                 (*player)(i - 2, j + 2, 0) == Player::e){
                             availableJumps[nAvailableJumps++] = {j, i, true, "dx-up"};
                             }
                         }
-                        if(checkPosition(i - 2, j - 2)){
+                        if(validPosition(i - 2, j - 2)){
                             if( ((*player)(i - 1, j - 1, 0) == Player::o ||
                                 (*player)(i - 1, j - 1, 0) == Player::O) &&
                                 (*player)(i - 2, j - 2, 0) == Player::e){
@@ -131,23 +131,23 @@ availableMove findPieceToMove(Player* player, Player::piece *board, Player::piec
             for(int j = 0; j < BOARD_DIM; ++j){
                 if(board[i * BOARD_DIM + j] == Player::o){
                     try{
-                        if(checkPosition(i + 1, j + 1)){
+                        if(validPosition(i + 1, j + 1)){
                             if( (*player)(i + 1, j + 1, 0) == Player::e){
                                 availableMoves[nAvailableMoves++] = {j, i, false, "dx-down"};
                             }
                         }
-                        if(checkPosition(i + 1, j - 1)){
+                        if(validPosition(i + 1, j - 1)){
                             if( (*player)(i + 1, j - 1, 0) == Player::e){
                                 availableMoves[nAvailableMoves++] = {j, i, false, "sx-down"};
                             }
                         }
-                        if(checkPosition(i + 2, j + 2)){
+                        if(validPosition(i + 2, j + 2)){
                             if( (*player)(i + 1, j + 1, 0) == Player::x &&
                                 (*player)(i + 2, j + 2, 0) == Player::e){
                                 availableJumps[nAvailableJumps++] = {j, i, true, "dx-down"};
                             }
                         }
-                        if(checkPosition(i + 2, j - 2)){
+                        if(validPosition(i + 2, j - 2)){
                             if( (*player)(i + 1, j - 1, 0) == Player::x &&
                                 (*player)(i + 2, j - 2, 0) == Player::e){
                                 availableJumps[nAvailableJumps++] = {j, i, true, "sx-down"};
@@ -156,48 +156,48 @@ availableMove findPieceToMove(Player* player, Player::piece *board, Player::piec
                     }catch(player_exception e){}
                 }else if(board[i * BOARD_DIM + j] == Player::O){
                     try{
-                        if(checkPosition(i - 1, j + 1)){
+                        if(validPosition(i - 1, j + 1)){
                             if( (*player)(i - 1, j + 1, 0) == Player::e){
                                 availableMoves[nAvailableMoves++] = {j, i, false, "dx-up"};
                             }
                         }
-                        if(checkPosition(i - 1, j - 1)){
+                        if(validPosition(i - 1, j - 1)){
                             if( (*player)(i - 1, j - 1, 0) == Player::e){
                                 availableMoves[nAvailableMoves++] = {j, i, false, "sx-up"};
                             }
                         }
-                        if(checkPosition(i + 1, j + 1)){
+                        if(validPosition(i + 1, j + 1)){
                             if( (*player)(i + 1, j + 1, 0) == Player::e){
                             availableMoves[nAvailableMoves++] = {j, i, false, "dx-down"};
                             }
                         }
-                        if(checkPosition(i + 1, j - 1)){
+                        if(validPosition(i + 1, j - 1)){
                             if( (*player)(i + 1, j - 1, 0) == Player::e){
                                 availableMoves[nAvailableMoves++] = {j, i, false, "sx-down"};
                             }
                         }
-                        if(checkPosition(i - 2, j + 2)){
+                        if(validPosition(i - 2, j + 2)){
                             if( ((*player)(i - 1, j + 1, 0) == Player::x ||
                                 (*player)(i - 1, j + 1, 0) == Player::X) &&
                                 (*player)(i - 2, j + 2, 0) == Player::e){
                                 availableJumps[nAvailableJumps++] = {j, i, true, "dx-up"};
                             }
                         }
-                        if(checkPosition(i - 2, j - 2)){
+                        if(validPosition(i - 2, j - 2)){
                             if( ((*player)(i - 1, j - 1, 0) == Player::x ||
                                 (*player)(i - 1, j - 1, 0) == Player::X) &&
                                 (*player)(i - 2, j - 2, 0) == Player::e){
                                 availableJumps[nAvailableJumps++] = {j, i, true, "sx-up"};
                             }
                         }
-                        if(checkPosition(i + 2, j + 2)){
+                        if(validPosition(i + 2, j + 2)){
                             if( ((*player)(i + 1, j + 1, 0) == Player::x ||
                                 (*player)(i + 1, j + 1, 0) == Player::X) &&
                                 (*player)(i + 2, j + 2, 0) == Player::e){
                                 availableJumps[nAvailableJumps++] = {j, i, true, "dx-down"};
                             }
                         }
-                        if(checkPosition(i + 2, j - 2)){
+                        if(validPosition(i + 2, j - 2)){
                             if( ((*player)(i + 1, j - 1, 0) == Player::x ||
                                 (*player)(i + 1, j - 1, 0) == Player::X) &&
                                 (*player)(i + 2, j - 2, 0) == Player::e){
@@ -258,13 +258,44 @@ class History{
     void deleteRecursively(node_ptr current){
         if(!current)
             return;
+
         deleteRecursively(current->next);
-        delete(current->board);
-        delete(current);
+
+        delete[] current->board;
+        delete current;
+    }
+
+    Player::piece* copyBoard(Player::piece* source){
+        Player::piece *newBoard = new Player::piece[BOARD_DIM * BOARD_DIM];
+
+        for(int i = 0; i < BOARD_DIM * BOARD_DIM; ++i){
+            newBoard[i] = source[i];
+        }
+
+        return newBoard;
+    }
+
+    node_ptr copyList(node_ptr source) {
+        if (!source)
+            return nullptr;
+        else{
+            node_ptr newNode = new node;
+            newNode->board = copyBoard(source->board);
+            newNode->next = copyList(source->next);
+            return newNode;
+        }
     }
 
     public:
-        History() : head{nullptr}, nEntry{0} {};
+        History(){
+            this->head = nullptr;
+            this->nEntry = 0;
+        };
+
+        History(const History& source){
+            this->nEntry = source.nEntry;
+            this->head = copyList(source.head);
+        };
  
         ~History(){
             deleteRecursively(this->head);
@@ -297,7 +328,6 @@ class History{
 
 struct Player::Impl{
     int player_nr;
-    int nDame;
     History boardHistory;
 };
 
@@ -306,7 +336,7 @@ Player::Player(int player_nr){
         throw player_exception{player_exception::index_out_of_bounds, "Player_nr must be equal to 1 or 2!"};
     
     srand(time(0));
-    this->pimpl = new Impl{player_nr, 0, History{}};
+    this->pimpl = new Impl{player_nr, History{}};
 }
 
 Player::~Player() {
@@ -314,19 +344,19 @@ Player::~Player() {
 }
 
 Player::Player(const Player& source){
-    this->~Player();
-    this->pimpl = new Impl{source.pimpl->player_nr, source.pimpl->nDame, History{source.pimpl->boardHistory}};
+    this->pimpl = new Impl{source.pimpl->player_nr, History{source.pimpl->boardHistory}};
 }
 
 Player& Player::operator=(const Player& source){
-    this->~Player();
-    this->pimpl = new Impl{source.pimpl->player_nr, 0, History{source.pimpl->boardHistory}};
-    
+    if(this != &source){
+        this->~Player();
+        this->pimpl = new Impl{source.pimpl->player_nr, History{source.pimpl->boardHistory}};
+    }
     return *this;
 }
 
 Player::piece Player::operator()(int r, int c, int history_offset) const{
-    if(r < 0 || r > 7 || c < 0 || c > 7)
+    if(!validPosition(r, c) || history_offset >= this->pimpl->boardHistory.getNumberOfEntry())
         throw player_exception{player_exception::index_out_of_bounds, "Index Out Of Bounds!"};
 
     Player::piece *board = this->pimpl->boardHistory.getBoard(history_offset);
@@ -342,25 +372,25 @@ void Player::load_board(const string& filename){
         throw player_exception{player_exception::missing_file, "File not found"};
 
     string line;
-    size_t raw = 0, cols = 0;
+    size_t row = 0, cols = 0;
     while(std::getline(fileIn, line, '\n')){
         cols = 0;
         for(int lineIndex = 0; lineIndex < line.size(); lineIndex+= 2){
             switch((char)line[lineIndex]){
                 case 'x':
-                    board[raw * BOARD_DIM + cols] = x;
+                    board[row * BOARD_DIM + cols] = x;
                 break;
                 case 'X':
-                    board[raw * BOARD_DIM + cols] = X;
+                    board[row * BOARD_DIM + cols] = X;
                 break;
                 case 'o':
-                    board[raw * BOARD_DIM + cols] = o;
+                    board[row * BOARD_DIM + cols] = o;
                 break;
                 case 'O':
-                    board[raw * BOARD_DIM + cols] = O;
+                    board[row * BOARD_DIM + cols] = O;
                 break;
                 case ' ':
-                    board[raw * BOARD_DIM + cols] = e;
+                    board[row * BOARD_DIM + cols] = e;
                 break;
                 default:
                     throw player_exception{player_exception::invalid_board, "Board contains invalid character!"};
@@ -368,14 +398,14 @@ void Player::load_board(const string& filename){
             }
             ++cols;
         }
-        ++raw;
+        ++row;
     }
-    this->pimpl->boardHistory.addBoard(board);
     fileIn.close();
+    this->pimpl->boardHistory.addBoard(board);
 }
 
 void Player::store_board(const string& filename, int history_offset) const{
-    if(history_offset > this->pimpl->boardHistory.getNumberOfEntry())
+    if(history_offset >= this->pimpl->boardHistory.getNumberOfEntry())
         throw player_exception{player_exception::index_out_of_bounds, "Board doesn't exist in memory"};
 
     Player::piece *board = this->pimpl->boardHistory.getBoard(history_offset);
@@ -635,15 +665,70 @@ bool Player::valid_move() const{
 
     for(int i = 0; i < BOARD_DIM; ++i){
         for(int j = 0; j < BOARD_DIM; ++j){
+            if(validPosition(i + 1, j + 1)){
+                if( lastBoard[i * BOARD_DIM + j] == Player::X && 
+                    secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::x)
+                    return true;
+
+                if( secondToLastBoard[i * BOARD_DIM + j] == Player::o &&
+                    lastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::O)
+                    return true;
+            }
+            if(validPosition(i + 1, j - 1)){
+                if( lastBoard[i * BOARD_DIM + j] == Player::X && 
+                    secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::x)
+                    return true;
+                
+                if( secondToLastBoard[i * BOARD_DIM + j] == Player::o &&
+                    lastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::O)
+                    return true;
+            }
+
+            if(validPosition(i + 2, j - 2)){
+                if( lastBoard[i * BOARD_DIM + j] == Player::X && 
+                    secondToLastBoard[(i + 2) * BOARD_DIM + (j - 2)] == Player::x &&
+                    secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::o)
+                    return true;
+                
+                if( secondToLastBoard[i * BOARD_DIM + j] == Player::o &&
+                    lastBoard[(i + 2) * BOARD_DIM + (j - 2)] == Player::O &&
+                    secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1) == Player::x])
+                    return true;
+            }
+
+            if(validPosition(i + 2, j + 2)){
+                if( lastBoard[i * BOARD_DIM + j] == Player::X && 
+                    secondToLastBoard[(i + 2) * BOARD_DIM + (j + 2)] == Player::x &&
+                    secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::o)
+                    return true;
+                
+                if( secondToLastBoard[i * BOARD_DIM + j] == Player::o &&
+                    lastBoard[(i + 2) * BOARD_DIM + (j + 2)] == Player::O &&
+                    secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1) == Player::x])
+                    return true;
+            }
+
             if(lastBoard[i * BOARD_DIM + j] != secondToLastBoard[i * BOARD_DIM + j]){
                 if(secondToLastBoard[i * BOARD_DIM + j] == Player::o) {
                         bool isValid = false;
-                        if(checkPosition(i + 1, j + 1)){
+                        if(validPosition(i + 1, j + 1)){
                             if(lastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::o)
                                 isValid = true;
                         }
-                        if(checkPosition(i + 1, j - 1)){
+                        if(validPosition(i + 1, j - 1)){
                             if(lastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::o)
+                                isValid = true;
+                        }
+                        if(validPosition(i + 2, j - 2)){
+                            if(lastBoard[(i + 2) * BOARD_DIM + (j - 2)] == Player::o &&
+                                lastBoard[(i + 1) * BOARD_DIM + (j - 1) == Player::e] &&
+                                secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::x)
+                                isValid = true;
+                        }
+                        if(validPosition(i + 2, j + 2)){
+                            if(lastBoard[(i + 2) * BOARD_DIM + (j + 2)] == Player::o &&
+                                lastBoard[(i + 1) * BOARD_DIM + (j + 1) == Player::e] &&
+                                secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::x)
                                 isValid = true;
                         }
                         return isValid;
@@ -651,25 +736,50 @@ bool Player::valid_move() const{
 
                 if(lastBoard[i * BOARD_DIM + j] == Player::x) {
                         bool isValid = false;
-                        if(checkPosition(i + 1, j + 1)){
+                        if(validPosition(i + 1, j + 1)){
                             if(secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::x)
                                 isValid = true;
                         }
-                        if(checkPosition(i + 1, j - 1)){
+                        if(validPosition(i + 1, j - 1)){
                             if(secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::x)
                                 isValid = true;
                         }
+                        if(validPosition(i + 2, j + 2)){
+                            if( secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::o &&
+                                secondToLastBoard[(i + 2) * BOARD_DIM + (j + 2)] == Player::x &&
+                                lastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::e)
+                                isValid = true;
+                        }
+                        if(validPosition(i + 2, j - 2)){
+                            if( secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::o &&
+                                secondToLastBoard[(i + 2) * BOARD_DIM + (j - 2)] == Player::x &&
+                                lastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::e)
+                                isValid = true;
+                        }
+
                         return isValid;
                 }
 
                 if(lastBoard[i * BOARD_DIM + j] == Player::O) {
                         bool isValid = false;
-                        if(checkPosition(i + 1, j + 1)){
+                        if(validPosition(i + 1, j + 1)){
                             if(secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::O)
                                 isValid = true;
                         }
-                        if(checkPosition(i + 1, j - 1)){
+                        if(validPosition(i + 1, j - 1)){
                             if(secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::O)
+                                isValid = true;
+                        }
+                        if(validPosition(i + 2, j + 2)){
+                            if( (secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::x ||
+                                secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::X) &&
+                                secondToLastBoard[(i + 2) * BOARD_DIM + (j + 2)] == Player::O)
+                                isValid = true;
+                        }
+                        if(validPosition(i + 2, j - 2)){
+                            if( (secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::x ||
+                                secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::X) &&
+                                secondToLastBoard[(i + 2) * BOARD_DIM + (j - 2)] == Player::O)
                                 isValid = true;
                         }
                         return isValid;
@@ -677,25 +787,50 @@ bool Player::valid_move() const{
 
                 if(secondToLastBoard[i * BOARD_DIM + j] == Player::O) {
                         bool isValid = false;
-                        if(checkPosition(i + 1, j + 1)){
+                        if(validPosition(i + 1, j + 1)){
                             if(lastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::O)
                                 isValid = true;
                         }
-                        if(checkPosition(i + 1, j - 1)){
+                        if(validPosition(i + 1, j - 1)){
                             if(lastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::O)
                                 isValid = true;
                         }
+                        if(validPosition(i + 2, j - 2)){
+                            if( (secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::x || 
+                                secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::X) &&
+                                lastBoard[(i + 2) * BOARD_DIM + (j - 2)] == Player::O)
+                                isValid = true;
+                        }
+                        if(validPosition(i + 2, j + 2)){
+                            if( (secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::x || 
+                                secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::X) &&
+                                lastBoard[(i + 2) * BOARD_DIM + (j + 2)] == Player::O)
+                                isValid = true;
+                        }
+                        
                         return isValid;
                 }
 
                 if(lastBoard[i * BOARD_DIM + j] == Player::X) {
                         bool isValid = false;
-                        if(checkPosition(i + 1, j + 1)){
+                        if(validPosition(i + 1, j + 1)){
                             if(secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::X)
                                 isValid = true;
                         }
-                        if(checkPosition(i + 1, j - 1)){
+                        if(validPosition(i + 1, j - 1)){
                             if(secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::X)
+                                isValid = true;
+                        }
+                        if(validPosition(i + 2, j + 2)){
+                            if( (secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::o ||
+                                secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::O) &&
+                                secondToLastBoard[(i + 2) * BOARD_DIM + (j + 2)] == Player::X)
+                                isValid = true;
+                        }
+                        if(validPosition(i + 2, j - 2)){
+                            if( (secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::o ||
+                                secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::O) &&
+                                secondToLastBoard[(i + 2) * BOARD_DIM + (j - 2)] == Player::X)
                                 isValid = true;
                         }
                         return isValid;
@@ -703,12 +838,24 @@ bool Player::valid_move() const{
 
                 if(secondToLastBoard[i * BOARD_DIM + j] == Player::X) {
                         bool isValid = false;
-                        if(checkPosition(i + 1, j + 1)){
+                        if(validPosition(i + 1, j + 1)){
                             if(lastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::X)
                                 isValid = true;
                         }
-                        if(checkPosition(i + 1, j - 1)){
+                        if(validPosition(i + 1, j - 1)){
                             if(lastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::X)
+                                isValid = true;
+                        }
+                        if(validPosition(i + 2, j - 2)){
+                            if( (secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::o || 
+                                secondToLastBoard[(i + 1) * BOARD_DIM + (j - 1)] == Player::O) &&
+                                lastBoard[(i + 2) * BOARD_DIM + (j - 2)] == Player::X)
+                                isValid = true;
+                        }
+                        if(validPosition(i + 2, j + 2)){
+                            if( (secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::o || 
+                                secondToLastBoard[(i + 1) * BOARD_DIM + (j + 1)] == Player::O) &&
+                                lastBoard[(i + 2) * BOARD_DIM + (j + 2)] == Player::X)
                                 isValid = true;
                         }
                         return isValid;
