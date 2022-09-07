@@ -94,10 +94,4 @@ int main(int argc, char **argv){
 			cout << e.msg << endl;
 		}
 	}
-
-	Player p3(p1);
-	Player p4 = p2;
-
-	std::cout << p1.recurrence();
-	
 }

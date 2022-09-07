@@ -375,7 +375,7 @@ void Player::load_board(const string& filename){
     size_t row = 0, cols = 0;
     while(std::getline(fileIn, line, '\n')){
         cols = 0;
-        for(int lineIndex = 0; lineIndex < line.size(); lineIndex+= 2){
+        for(size_t lineIndex = 0; lineIndex < line.size(); lineIndex+= 2){
             switch((char)line[lineIndex]){
                 case 'x':
                     board[row * BOARD_DIM + cols] = x;
@@ -601,6 +601,8 @@ void Player::pop(){
 bool Player::wins(int player_nr) const{
     if(this->pimpl->boardHistory.getNumberOfEntry() == 0)
         throw player_exception{player_exception::index_out_of_bounds, "History is empty!"};
+    if(player_nr < 1 || player_nr > 2)
+        throw player_exception{player_exception::index_out_of_bounds, "Invalid player"};
 
     Player::piece *board = this->pimpl->boardHistory.getBoard(0);
 
@@ -630,7 +632,9 @@ bool Player::wins() const{
 bool Player::loses(int player_nr) const{
     if(this->pimpl->boardHistory.getNumberOfEntry() == 0)
         throw player_exception{player_exception::index_out_of_bounds, "History is empty!"};
-
+    if(player_nr < 1 || player_nr > 2)
+        throw player_exception{player_exception::index_out_of_bounds, "Invalid player"};
+        
     Player::piece *board = this->pimpl->boardHistory.getBoard(0);
 
     if(player_nr == 1){
